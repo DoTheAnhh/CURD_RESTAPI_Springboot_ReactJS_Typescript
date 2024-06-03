@@ -32,6 +32,10 @@ const ListEmployee: React.FC = () => {
     }
   };
 
+  const detailEmployee = (id: number) => {
+    navigator(`/employee/${id}`);
+  };
+
   function addEmployee() {
     navigator("/add-employees");
   }
@@ -77,14 +81,24 @@ const ListEmployee: React.FC = () => {
               <td>{e.address}</td>
               <td>{e.position.name}</td>
               <td>
-                <button className="btn btn-success">Detail</button>
+                <button
+                  className="btn btn-success"
+                  onClick={() => detailEmployee(e.id)}
+                >
+                  Detail
+                </button>
                 <button
                   className="btn btn-warning"
                   onClick={() => editEmployee(e.id)}
                 >
                   Update
                 </button>
-                <button className="btn btn-danger" onClick={() => deleteEmployee(e.id)}>Delete</button>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => deleteEmployee(e.id)}
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}
