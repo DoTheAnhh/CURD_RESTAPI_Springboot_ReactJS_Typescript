@@ -14,18 +14,48 @@ interface Employee {
 
 const ListEmployee: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const removeVietnameseTones = (str: string): string => {
+    // Function to remove Vietnamese tones
+    str = str.replace(/[\u0300-\u036f]/g, "");
+    str = str.normalize("NFD");
+    str = str.replace(/Đ/g, "D").replace(/đ/g, "d");
+    str = str.replace(/[^a-zA-Z0-9\s]/g, "");
+    return str;
+  };
+
+  const handleSearch = async (searchName: string) => {
+    try {
+      let res;
+      const normalizedSearchName = removeVietnameseTones(searchName.trim());
+      if (normalizedSearchName === "") {
+        res = await axios.get<Employee[]>("http://localhost:8080/api/v1/employees");
+      } else {
+        const encodedSearchName = encodeURIComponent(normalizedSearchName);
+        res = await axios.get<Employee[]>(`http://localhost:8080/api/v1/employees/search?name=${encodedSearchName}`);
+      }
+      setEmployees(res.data);
+    } catch (error) {
+      console.error("Error searching:", error);
+    }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchTerm(value);
+    handleSearch(value);
+  };
 
   const navigator = useNavigate();
 
   useEffect(() => {
     fetchEmployee();
-  }, [employees]);
+  }, []);
 
   const fetchEmployee = async () => {
     try {
-      const res = await axios.get<Employee[]>(
-        "http://localhost:8080/api/v1/employees"
-      );
+      const res = await axios.get<Employee[]>("http://localhost:8080/api/v1/employees");
       setEmployees(res.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -36,29 +66,38 @@ const ListEmployee: React.FC = () => {
     navigator(`/employee/${id}`);
   };
 
-  function addEmployee() {
+  const addEmployee = () => {
     navigator("/add-employees");
-  }
+  };
 
-  function editEmployee(id: number) {
+  const editEmployee = (id: number) => {
     navigator(`/edit-employee/${id}`);
-  }
+  };
 
-  async function deleteEmployee(id: number) {
+  const deleteEmployee = async (id: number) => {
     try {
       await axios.delete(`http://localhost:8080/api/v1/employees/${id}`);
       alert("Deleted employee ID: " + id);
+      fetchEmployee();
     } catch (error) {
       console.error(`Error deleting employee with ID ${id}:`, error);
     }
-  }
+  };
 
   return (
     <div className="container">
       <div className="h2 text-center m-3">ListEmployee</div>
-      <button className="btn btn-primary" onClick={addEmployee}>
-        New employee
-      </button>
+      <div className="mt-3 mb-3">
+        <label className="form-label fw-bold" htmlFor="search">Search</label>
+        <input
+          className="form-control"
+          type="text"
+          id="search"
+          value={searchTerm}
+          onChange={handleChange}
+        />
+      </div>
+      <button className="btn btn-primary" onClick={addEmployee}>New employee</button>
       <table className="table">
         <thead>
           <tr>
@@ -81,24 +120,9 @@ const ListEmployee: React.FC = () => {
               <td>{e.address}</td>
               <td>{e.position.name}</td>
               <td>
-                <button
-                  className="btn btn-success"
-                  onClick={() => detailEmployee(e.id)}
-                >
-                  Detail
-                </button>
-                <button
-                  className="btn btn-warning"
-                  onClick={() => editEmployee(e.id)}
-                >
-                  Update
-                </button>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => deleteEmployee(e.id)}
-                >
-                  Delete
-                </button>
+                <button className="btn btn-success" onClick={() => detailEmployee(e.id)}>Detail</button>
+                <button className="btn btn-warning" onClick={() => editEmployee(e.id)}>Update</button>
+                <button className="btn btn-danger" onClick={() => deleteEmployee(e.id)}>Delete</button>
               </td>
             </tr>
           ))}

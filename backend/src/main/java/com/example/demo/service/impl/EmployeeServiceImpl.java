@@ -26,6 +26,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<Employee> searchEmployeeByName(String name) {
+        List<Employee> employees = repo.findByNameContainingIgnoreCase(name);
+        if(employees.isEmpty()){
+            return repo.findAll();
+        }
+        return employees;
+    }
+
+    @Override
     public Employee add(Employee employee) {
         return repo.save(employee);
     }

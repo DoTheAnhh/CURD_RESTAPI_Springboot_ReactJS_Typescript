@@ -18,7 +18,7 @@ public class EmployeeController {
     @Autowired
     EmployeeService service;
 
-    @GetMapping()
+    @GetMapping("")
     public List<Employee> findAll(){
         return service.findAll();
     }
@@ -28,6 +28,15 @@ public class EmployeeController {
         Optional<Employee> e = service.findById(id);
         return e.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/search")
+    public List<Employee> searchEmployeeByName(@RequestParam("name") String name){
+        if(name.trim() != null && !name.trim().isEmpty()){
+            return service.searchEmployeeByName(name);
+        }else{
+            return service.findAll();
+        }
     }
 
     @PostMapping

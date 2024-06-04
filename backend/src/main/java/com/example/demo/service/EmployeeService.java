@@ -11,6 +11,8 @@ public interface EmployeeService {
 
     Optional<Employee> findById(Long id);
 
+    List<Employee> searchEmployeeByName(String name);
+
     Employee add(Employee employee);
 
     Employee update(Long id, Employee employee);
