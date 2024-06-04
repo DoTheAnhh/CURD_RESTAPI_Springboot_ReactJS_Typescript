@@ -6,8 +6,10 @@ import com.example.demo.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -25,13 +27,22 @@ public class EmployeeServiceImpl implements EmployeeService {
         return repo.findById(id);
     }
 
-    @Override
     public List<Employee> searchEmployeeByName(String name) {
-        List<Employee> employees = repo.findByNameContainingIgnoreCase(name);
-        if(employees.isEmpty()){
-            return repo.findAll();
+        String normalizedSearchTerm = removeVietnameseTones(name);
+        List<Employee> result = repo.findByNameContainingIgnoreCase(name);
+        if (result.isEmpty()) {
+            result = repo.findByNameContainingIgnoreCase(normalizedSearchTerm);
         }
-        return employees;
+        return result;
+    }
+
+    private String removeVietnameseTones(String str) {
+        str = Normalizer.normalize(str, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        str = pattern.matcher(str).replaceAll("");
+        str = str.replaceAll("Đ", "D");
+        str = str.replaceAll("đ", "d");
+        return str;
     }
 
     @Override

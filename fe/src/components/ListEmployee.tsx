@@ -16,23 +16,13 @@ const ListEmployee: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const removeVietnameseTones = (str: string): string => {
-    // Function to remove Vietnamese tones
-    str = str.replace(/[\u0300-\u036f]/g, "");
-    str = str.normalize("NFD");
-    str = str.replace(/Đ/g, "D").replace(/đ/g, "d");
-    str = str.replace(/[^a-zA-Z0-9\s]/g, "");
-    return str;
-  };
-
   const handleSearch = async (searchName: string) => {
     try {
       let res;
-      const normalizedSearchName = removeVietnameseTones(searchName.trim());
-      if (normalizedSearchName === "") {
+      if (searchName.trim() === "") {
         res = await axios.get<Employee[]>("http://localhost:8080/api/v1/employees");
       } else {
-        const encodedSearchName = encodeURIComponent(normalizedSearchName);
+        const encodedSearchName = encodeURIComponent(searchName.trim());
         res = await axios.get<Employee[]>(`http://localhost:8080/api/v1/employees/search?name=${encodedSearchName}`);
       }
       setEmployees(res.data);
@@ -116,7 +106,7 @@ const ListEmployee: React.FC = () => {
               <td>{e.code}</td>
               <td>{e.name}</td>
               <td>{e.age}</td>
-              <td>{e.gender ? "Nam" : "Nữ"}</td>
+              <td>{e.gender ? "Male" : "Female"}</td>
               <td>{e.address}</td>
               <td>{e.position.name}</td>
               <td>

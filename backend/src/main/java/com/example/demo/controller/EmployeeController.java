@@ -7,8 +7,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.Normalizer;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @RestController
 @CrossOrigin("*")
@@ -31,12 +33,23 @@ public class EmployeeController {
     }
 
     @GetMapping("/search")
-    public List<Employee> searchEmployeeByName(@RequestParam("name") String name){
-        if(name.trim() != null && !name.trim().isEmpty()){
-            return service.searchEmployeeByName(name);
-        }else{
+    public List<Employee> searchEmployeeByName(@RequestParam("name") String name) {
+        String trimmedName = name.trim();
+        if (!trimmedName.isEmpty()) {
+            String normalizedSearchTerm = removeVietnameseTones(trimmedName);
+            return service.searchEmployeeByName(normalizedSearchTerm);
+        } else {
             return service.findAll();
         }
+    }
+
+    private String removeVietnameseTones(String str) {
+        str = Normalizer.normalize(str, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        str = pattern.matcher(str).replaceAll("");
+        str = str.replaceAll("Đ", "D");
+        str = str.replaceAll("đ", "d");
+        return str;
     }
 
     @PostMapping
