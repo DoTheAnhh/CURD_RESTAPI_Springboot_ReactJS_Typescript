@@ -18,4 +18,6 @@ public interface EmployeeService {
     Employee update(Long id, Employee employee);
 
     void delete(Long id);
+
+    List<Employee> searchEmployees(String name, Boolean gender, String position);
 }

@@ -1,0 +1,23 @@
+<div>
+        <div className="container mt-3">
+          <div className="row">
+            <div className="col-2">
+              <div className="fw-bold">Gender</div>
+              <select className="form-select">
+                
+                <option value="">All</option>
+                <option value="">Male</option>
+                <option value="">Female</option>
+              </select>
+            </div>
+            <div className="col-2">
+              <div className="fw-bold">Position</div>
+              <select className="form-select">
+                <option value="">All</option>
+                <option value="">Admin</option>
+                <option value="">User</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>

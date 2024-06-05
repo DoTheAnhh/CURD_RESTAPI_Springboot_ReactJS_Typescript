@@ -16,29 +16,54 @@ const ListEmployee: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const handleSearch = async (searchName: string) => {
+  const [gender, setGender] = useState<string>("");
+  const [position, setPosition] = useState<string>("");
+
+  const handleSearch = async (
+    searchName: string,
+    selectedGender: string,
+    selectedPosition: string
+  ) => {
     try {
-      let res;
-      if (searchName.trim() === "") {
-        res = await axios.get<Employee[]>(
-          "http://localhost:8080/api/v1/employees"
-        );
-      } else {
-        const encodedSearchName = encodeURIComponent(searchName.trim());
-        res = await axios.get<Employee[]>(
-          `http://localhost:8080/api/v1/employees/search?name=${encodedSearchName}`
-        );
+      let url = `http://localhost:8080/api/v1/employees/search?name=${encodeURIComponent(
+        searchName
+      )}`;
+      if (selectedGender) {
+        url += `&gender=${selectedGender}`;
       }
-      setEmployees(res.data);
+      if (selectedPosition) {
+        url += `&position=${encodeURIComponent(selectedPosition)}`;
+      }
+
+      if (searchTerm == "") {
+        fetchEmployee();
+      } else {
+        const res = await axios.get<Employee[]>(url);
+        setEmployees(res.data);
+      }
     } catch (error) {
       console.error("Error searching:", error);
     }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
+    const { value } = event.target;
     setSearchTerm(value);
-    handleSearch(value);
+    handleSearch(value, gender, position);
+  };
+
+  const handleGenderChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.target;
+    setGender(value);
+    handleSearch(searchTerm, value, position);
+  };
+
+  const handlePositionChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const { value } = event.target;
+    setPosition(value);
+    handleSearch(searchTerm, gender, value);
   };
 
   const navigator = useNavigate();
@@ -79,9 +104,6 @@ const ListEmployee: React.FC = () => {
   return (
     <div className="container">
       <div className="mt-3 mb-3">
-        <label className="form-label fw-bold" htmlFor="search">
-          Search
-        </label>
         <input
           className="form-control"
           type="text"
@@ -90,26 +112,31 @@ const ListEmployee: React.FC = () => {
           onChange={handleChange}
         />
       </div>
-      <div>
-        <div className="container mt-3">
-          <div className="row">
-            <div className="col-2">
-              <div className="fw-bold">Gender</div>
-              <select className="form-select">
-                
-                <option value="">All</option>
-                <option value="">Male</option>
-                <option value="">Female</option>
-              </select>
-            </div>
-            <div className="col-2">
-              <div className="fw-bold">Position</div>
-              <select className="form-select">
-                <option value="">All</option>
-                <option value="">Admin</option>
-                <option value="">User</option>
-              </select>
-            </div>
+      <div className="container mt-3">
+        <div className="row">
+          <div className="col-md-3">
+            <div className="fw-bold">Gender</div>
+            <select
+              className="form-select"
+              value={gender}
+              onChange={handleGenderChange}
+            >
+              <option value="">All</option>
+              <option value="true">Male</option>
+              <option value="false">Female</option>
+            </select>
+          </div>
+          <div className="col-md-3">
+            <div className="fw-bold">Position</div>
+            <select
+              className="form-select"
+              value={position}
+              onChange={handlePositionChange}
+            >
+              <option value="">All</option>
+              <option value="Admin">Admin</option>
+              <option value="User">User</option>
+            </select>
           </div>
         </div>
       </div>

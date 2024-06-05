@@ -69,7 +69,7 @@ const Employee: React.FC = () => {
             await axios.post("http://localhost:8080/api/v1/employees", employee);
 
         }
-        navigator("/positions")
+        navigator("/employees")
     } catch (error) {
       console.error("Error adding item:", error);
     }

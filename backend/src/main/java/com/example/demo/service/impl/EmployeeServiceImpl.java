@@ -1,9 +1,11 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.Employee;
+import com.example.demo.entity.specification.EmployeeSpecifications;
 import com.example.demo.repository.EmployeeRepository;
 import com.example.demo.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.text.Normalizer;
@@ -70,11 +72,27 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
-
     @Override
     public void delete(Long id) {
         repo.deleteById(id);
     }
 
+    @Override
+    public List<Employee> searchEmployees(String name, Boolean gender, String position) {
+        Specification<Employee> spec = Specification.where(null);
 
+        if (name != null && !name.trim().isEmpty()) {
+            spec = spec.and(EmployeeSpecifications.hasName(name));
+        }
+
+        if (gender != null) {
+            spec = spec.and(EmployeeSpecifications.hasGender(gender));
+        }
+
+        if (position != null && !position.trim().isEmpty()) {
+            spec = spec.and(EmployeeSpecifications.hasPosition(position));
+        }
+
+        return repo.findAll(spec);
+    }
 }

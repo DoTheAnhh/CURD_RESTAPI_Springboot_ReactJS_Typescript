@@ -25,26 +25,6 @@ public class EmployeeController {
         return service.findAll();
     }
 
-    @GetMapping("/search")
-    public List<Employee> searchEmployeeByName(@RequestParam("name") String name) {
-        String trimmedName = name.trim();
-        if (!trimmedName.isEmpty()) {
-            String normalizedSearchTerm = removeVietnameseTones(trimmedName);
-            return service.searchEmployeeByName(normalizedSearchTerm);
-        } else {
-            return service.findAll();
-        }
-    }
-
-    private String removeVietnameseTones(String str) {
-        str = Normalizer.normalize(str, Normalizer.Form.NFD);
-        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-        str = pattern.matcher(str).replaceAll("");
-        str = str.replaceAll("Đ", "D");
-        str = str.replaceAll("đ", "d");
-        return str;
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<Employee> findById(@PathVariable Long id){
         Optional<Employee> e = service.findById(id);
@@ -70,5 +50,25 @@ public class EmployeeController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/search")
+    public List<Employee> searchEmployees(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Boolean gender,
+            @RequestParam(required = false) String position) {
+        if (name != null) {
+            name = removeVietnameseTones(name);
+        }
+        return service.searchEmployees(name, gender, position);
+    }
+
+    private String removeVietnameseTones(String str) {
+        str = Normalizer.normalize(str, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        str = pattern.matcher(str).replaceAll("");
+        str = str.replaceAll("Đ", "D");
+        str = str.replaceAll("đ", "d");
+        return str;
     }
 }
