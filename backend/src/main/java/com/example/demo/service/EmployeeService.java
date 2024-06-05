@@ -9,9 +9,9 @@ public interface EmployeeService {
 
     List<Employee> findAll();
 
-    Optional<Employee> findById(Long id);
+    List<Employee> searchEmployeeByName(String name);;
 
-    List<Employee> searchEmployeeByName(String name);
+    Optional<Employee> findById(Long id);
 
     Employee add(Employee employee);
 

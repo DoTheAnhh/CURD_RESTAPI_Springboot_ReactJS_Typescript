@@ -1,5 +1,49 @@
-*{
+/* src/App.css */
+.demo-logo-vertical {
+    height: 32px;
+    margin: 16px;
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  html, body, #root {
+    height: 100%;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
+  }
+  
+  .ant-layout {
+    height: 100%;
+  }
+  
+  .logo-container {
+    text-align: center;
+    padding: 16px;
+  }
+  
+  .logo {
+    max-width: 100%;
+    height: auto;
+    width: 80%;
+  }
+  
+  .table-container {
+    width: 80%; /* Độ rộng của bảng */
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .table {
+    width: 100%;
+    text-align: center;
+  }
+  
+  thead th {
+    text-align: center;
+  }
+  
+  tbody td {
+    text-align: center;
+  }
+  

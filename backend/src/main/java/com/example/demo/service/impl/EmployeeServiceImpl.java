@@ -27,6 +27,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return repo.findById(id);
     }
 
+    @Override
     public List<Employee> searchEmployeeByName(String name) {
         String normalizedSearchTerm = removeVietnameseTones(name);
         List<Employee> result = repo.findByNameContainingIgnoreCase(name);
@@ -61,6 +62,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             existingEmployee.setAge(updatedEmployee.getAge());
             existingEmployee.setGender(updatedEmployee.isGender());
             existingEmployee.setAddress(updatedEmployee.getAddress());
+            existingEmployee.setPosition(updatedEmployee.getPosition());
 
             return repo.save(existingEmployee);
         } else {

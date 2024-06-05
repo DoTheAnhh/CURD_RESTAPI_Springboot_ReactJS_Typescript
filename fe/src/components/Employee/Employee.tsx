@@ -69,7 +69,7 @@ const Employee: React.FC = () => {
             await axios.post("http://localhost:8080/api/v1/employees", employee);
 
         }
-        navigator("/")
+        navigator("/positions")
     } catch (error) {
       console.error("Error adding item:", error);
     }
@@ -81,7 +81,6 @@ const Employee: React.FC = () => {
 
   return (
     <div className="container">
-        <h2 className="h2 text-center m-3">Employee</h2>
         <div>
             <label className="form-label fw-bold">Code</label>
             <input className="form-control" type="text" value={code} onChange={(e) => setCode(e.target.value)}/>

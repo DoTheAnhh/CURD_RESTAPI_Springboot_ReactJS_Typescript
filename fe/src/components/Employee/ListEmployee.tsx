@@ -62,10 +62,6 @@ const ListEmployee: React.FC = () => {
     navigator(`/employee/${id}`);
   };
 
-  const addEmployee = () => {
-    navigator("/add-employees");
-  };
-
   const editEmployee = (id: number) => {
     navigator(`/edit-employee/${id}`);
   };
@@ -82,8 +78,6 @@ const ListEmployee: React.FC = () => {
 
   return (
     <div className="container">
-      <div className="h2 text-center m-3">ListEmployee</div>
-
       <div className="mt-3 mb-3">
         <label className="form-label fw-bold" htmlFor="search">
           Search
@@ -97,9 +91,6 @@ const ListEmployee: React.FC = () => {
         />
       </div>
       <div>
-        <button className="btn btn-primary" onClick={addEmployee}>
-          New employee
-        </button>
         <div className="container mt-3">
           <div className="row">
             <div className="col-2">
@@ -122,7 +113,7 @@ const ListEmployee: React.FC = () => {
           </div>
         </div>
       </div>
-      <table className="table">
+      <table className="table table-striped">
         <thead>
           <tr>
             <th>Code</th>

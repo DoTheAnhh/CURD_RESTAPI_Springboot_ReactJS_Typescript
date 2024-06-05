@@ -25,13 +25,6 @@ public class EmployeeController {
         return service.findAll();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Employee> findById(@PathVariable Long id){
-        Optional<Employee> e = service.findById(id);
-        return e.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
     @GetMapping("/search")
     public List<Employee> searchEmployeeByName(@RequestParam("name") String name) {
         String trimmedName = name.trim();
@@ -50,6 +43,13 @@ public class EmployeeController {
         str = str.replaceAll("Đ", "D");
         str = str.replaceAll("đ", "d");
         return str;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Employee> findById(@PathVariable Long id){
+        Optional<Employee> e = service.findById(id);
+        return e.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping

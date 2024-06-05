@@ -1,0 +1,84 @@
+/* src/components/Home/Home.css */
+.hero-section {
+    background-image: url('https://via.placeholder.com/1200x400'); /* Replace with your own background image */
+    background-size: cover;
+    background-position: center;
+    padding: 100px 50px;
+    color: #fff;
+    text-align: center;
+  }
+  
+  .hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .hero-title {
+    color: #fff;
+    font-size: 48px;
+    margin-bottom: 24px;
+  }
+  
+  .hero-subtitle {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 24px;
+  }
+  
+  .hero-button {
+    margin: 0 8px;
+  }
+  
+  .feature-card {
+    transition: transform 0.3s ease;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-10px);
+  }
+  /* src/components/Home/Home.css */
+.hero-section {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Dongdaemun_Design_Plaza_at_night%2C_Seoul%2C_Korea.jpg/1200px-Dongdaemun_Design_Plaza_at_night%2C_Seoul%2C_Korea.jpg'); /* Replace with your own background image URL */
+    background-size: cover;
+    background-position: center;
+    padding: 100px 50px;
+    color: #fff;
+    text-align: center;
+  }
+  
+  .hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .hero-title {
+    color: #fff;
+    font-size: 48px;
+    margin-bottom: 24px;
+  }
+  
+  .hero-subtitle {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 24px;
+  }
+  
+  .hero-button {
+    margin: 0 8px;
+  }
+  
+  .feature-card {
+    transition: transform 0.3s ease;
+  }
+  
+  .feature-card:hover {
+    transform: translateY(-10px);
+  }
+
+  .feature-card img {
+    height: 200px; /* Adjust height as necessary */
+    object-fit: cover;
+    width: 100%;
+  }
+  
+  
