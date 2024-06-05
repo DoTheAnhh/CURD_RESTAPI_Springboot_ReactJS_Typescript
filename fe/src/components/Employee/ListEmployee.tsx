@@ -25,9 +25,12 @@ const ListEmployee: React.FC = () => {
     selectedPosition: string
   ) => {
     try {
-      let url = `http://localhost:8080/api/v1/employees/search?name=${encodeURIComponent(
-        searchName
-      )}`;
+      let url = `http://localhost:8080/api/v1/employees/search?`;
+
+      if (searchName) {
+        url += `&name=${encodeURIComponent(searchName)}`;
+      }
+
       if (selectedGender) {
         url += `&gender=${selectedGender}`;
       }
@@ -36,7 +39,8 @@ const ListEmployee: React.FC = () => {
       }
 
       if (searchTerm == "") {
-        fetchEmployee();
+        const res = await axios.get<Employee[]>(url);
+        setEmployees(res.data);
       } else {
         const res = await axios.get<Employee[]>(url);
         setEmployees(res.data);
@@ -140,7 +144,7 @@ const ListEmployee: React.FC = () => {
           </div>
         </div>
       </div>
-      <table className="table table-striped">
+      <table className="table table-striped mt-3">
         <thead>
           <tr>
             <th>Code</th>
@@ -161,15 +165,15 @@ const ListEmployee: React.FC = () => {
               <td>{e.gender ? "Male" : "Female"}</td>
               <td>{e.address}</td>
               <td>{e.position.name}</td>
-              <td>
+              <td className="d-flex justify-content-center">
                 <button
-                  className="btn btn-success"
+                  className="btn btn-success me-2"
                   onClick={() => detailEmployee(e.id)}
                 >
                   Detail
                 </button>
                 <button
-                  className="btn btn-warning"
+                  className="btn btn-warning me-2"
                   onClick={() => editEmployee(e.id)}
                 >
                   Update
