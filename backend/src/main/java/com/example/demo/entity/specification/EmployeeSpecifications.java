@@ -1,6 +1,8 @@
 package com.example.demo.entity.specification;
 
 import com.example.demo.entity.Employee;
+import com.example.demo.entity.Position;
+import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
 public class EmployeeSpecifications {
@@ -14,7 +16,10 @@ public class EmployeeSpecifications {
     }
 
     public static Specification<Employee> hasPosition(String position) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("position"), position);
+        return (root, query, criteriaBuilder) -> {
+            Join<Employee, Position> positionJoin = root.join("position");
+            return criteriaBuilder.equal(positionJoin.get("name"), position);
+        };
     }
 }
 
