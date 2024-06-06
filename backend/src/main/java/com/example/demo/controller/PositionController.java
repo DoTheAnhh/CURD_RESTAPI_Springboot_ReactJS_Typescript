@@ -4,6 +4,9 @@ import com.example.demo.entity.Employee;
 import com.example.demo.entity.Position;
 import com.example.demo.service.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin("*")
 @RequestMapping("/api/v1/positions")
 public class PositionController {
 
@@ -20,8 +22,13 @@ public class PositionController {
     PositionService service;
 
     @GetMapping("")
-    public List<Position> findAll(){
-        return service.findAll();
+    public Page<Position> getAllPositions(@PageableDefault(size = 5 ) Pageable pageable) {
+        return service.findAll(pageable);
+    }
+
+    @GetMapping("/all")
+    public List<Position> getAll() {
+        return service.findAl();
     }
 
     @GetMapping("/{id}")

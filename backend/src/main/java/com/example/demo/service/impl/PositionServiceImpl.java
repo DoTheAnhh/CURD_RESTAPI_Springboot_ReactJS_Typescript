@@ -5,6 +5,8 @@ import com.example.demo.entity.Position;
 import com.example.demo.repository.PositionRepository;
 import com.example.demo.service.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,8 +18,13 @@ public class PositionServiceImpl implements PositionService {
     @Autowired
     PositionRepository repository;
 
+        @Override
+        public Page<Position> findAll(Pageable pageable) {
+            return repository.findAll(pageable);
+        }
+
     @Override
-    public List<Position> findAll() {
+    public List<Position> findAl() {
         return repository.findAll();
     }
 

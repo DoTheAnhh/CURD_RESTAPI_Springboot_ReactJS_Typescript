@@ -3,6 +3,9 @@ package com.example.demo.controller;
 import com.example.demo.entity.Employee;
 import com.example.demo.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +16,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 @RestController
-@CrossOrigin("*")
 @RequestMapping("/api/v1/employees")
 public class EmployeeController {
 
@@ -21,8 +23,8 @@ public class EmployeeController {
     EmployeeService service;
 
     @GetMapping("")
-    public List<Employee> findAll(){
-        return service.findAll();
+    public Page<Employee> getAllEmployees(@PageableDefault(size = 5 ) Pageable pageable) {
+        return service.findAll(pageable);
     }
 
     @GetMapping("/{id}")

@@ -32,7 +32,7 @@ const Employee: React.FC = () => {
 
   const fetchPosition = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/v1/positions");
+      const res = await axios.get("http://localhost:8080/api/v1/positions/all");
       setPositions(res.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -132,12 +132,13 @@ const Employee: React.FC = () => {
         </Form.Item>
         <Form.Item label="Position" required>
           <Select
-            value={position?.name || "User"}
+            value={position ? position.name : ""}
             onChange={(value) => {
               const selectedPosition = positions.find((p) => p.name === value);
               setPosition(selectedPosition || null);
             }}
           >
+            <Select.Option value="">-- Select Position --</Select.Option>
             {positions.map((p) => (
               <Select.Option key={p.id} value={p.name}>
                 {p.name}

@@ -1,0 +1,7 @@
+    .pagination-container {
+        position: fixed; /* Hoặc sử dụng 'absolute' nếu bạn muốn nó cố định trong một phần tử cha đã định vị tương đối */
+        bottom: 50px; /* Điều chỉnh khoảng cách từ bottom của trang */
+        left: 50%; /* Đặt Pagination ở giữa trang */
+        transform: translateX(-50%); /* Dịch chuyển Pagination sang trái 50% để căn giữa */
+        z-index: 999; /* Đảm bảo Pagination hiển thị trên các phần tử khác */
+    }

@@ -1,9 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Table, Select, Input, Button } from "antd";
-
-import {Row, Col } from "antd";
+import { Table, Select, Input, Button, Pagination, Row, Col } from "antd";
+import "./css/Employee.css"
 
 const { Option } = Select;
 
@@ -24,6 +23,10 @@ const ListEmployee: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [gender, setGender] = useState<string>("");
   const [position, setPosition] = useState<string>("");
+
+  const [currentPage, setCurrentPage] = useState<number>(1); // State để theo dõi trang hiện tại
+  const [pageSize, setPageSize] = useState<number>(5 ); // Số mục trên mỗi trang
+  const [total, setTotal] = useState<number>(0); // Tổng số phần tử
 
   const handleSearch = async (
     searchName: string,
@@ -57,6 +60,15 @@ const ListEmployee: React.FC = () => {
     handleSearch(value, gender, position);
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1); // Trở về trang đầu tiên khi thay đổi kích thước trang
+  };
+
   const handleGenderChange = (value: string) => {
     setGender(value);
     handleSearch(searchTerm, value, position);
@@ -71,14 +83,20 @@ const ListEmployee: React.FC = () => {
 
   useEffect(() => {
     fetchEmployee();
-  }, []);
+  }, [currentPage, pageSize]);
 
   const fetchEmployee = async () => {
     try {
-      const res = await axios.get<Employee[]>(
-        "http://localhost:8080/api/v1/employees"
+      const res = await axios.get(
+        `http://localhost:8080/api/v1/employees`, {
+          params: {
+            page: currentPage - 1,
+            size: pageSize,
+          },
+        }
       );
-      setEmployees(res.data);
+      setEmployees(res.data.content);
+      setTotal(res.data.totalElements);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -104,51 +122,65 @@ const ListEmployee: React.FC = () => {
 
   const columns = [
     {
-      title: 'Code',
-      dataIndex: 'code',
-      key: 'code',
-      align: 'center' as const,
+      title: "Code",
+      dataIndex: "code",
+      key: "code",
+      align: "center" as const,
     },
     {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      align: 'center' as const,
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+      align: "center" as const,
     },
     {
-      title: 'Age',
-      dataIndex: 'age',
-      key: 'age',
-      align: 'center' as const,
+      title: "Age",
+      dataIndex: "age",
+      key: "age",
+      align: "center" as const,
     },
     {
-      title: 'Gender',
-      dataIndex: 'gender',
-      key: 'gender',
-      align: 'center' as const,
-      render: (gender: boolean) => (gender ? 'Male' : 'Female'),
+      title: "Gender",
+      dataIndex: "gender",
+      key: "gender",
+      align: "center" as const,
+      render: (gender: boolean) => (gender ? "Male" : "Female"),
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
-      align: 'center' as const,
+      title: "Address",
+      dataIndex: "address",
+      key: "address",
+      align: "center" as const,
     },
     {
-      title: 'Position',
-      dataIndex: ['position', 'name'],
-      key: 'position',
-      align: 'center' as const,
+      title: "Position",
+      dataIndex: ["position", "name"],
+      key: "position",
+      align: "center" as const,
     },
     {
-      title: 'Action',
-      key: 'action',
-      align: 'center' as const,
+      title: "Action",
+      key: "action",
+      align: "center" as const,
       render: (record: Employee) => (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <Button type="primary" className="me-2" onClick={() => detailEmployee(record.id)}>Detail</Button>
-          <Button type="primary" className="me-2" onClick={() => editEmployee(record.id)}>Update</Button>
-          <Button type="primary" onClick={() => deleteEmployee(record.id)}>Delete</Button>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Button
+            type="primary"
+            className="me-2"
+            onClick={() => detailEmployee(record.id)}
+          >
+            Detail
+          </Button>
+          <Button
+            type="primary"
+            className="me-2"
+            onClick={() => editEmployee(record.id)}
+          >
+            Update
+          </Button>
+          <Button type="primary" onClick={() => deleteEmployee(record.id)}>
+            Delete
+          </Button>
         </div>
       ),
     },
@@ -157,49 +189,59 @@ const ListEmployee: React.FC = () => {
   return (
     <div className="container">
       <div className="mt-3 mb-3">
-      <Input
-        value={searchTerm}
-        onChange={handleChange}
-        placeholder="Search"
-        allowClear
-        style={{ width: '100%' }}
-      />
-    </div>
-    <div className="container mt-3">
-      <Row gutter={[16, 16]}>
-        <Col xs={24} md={12} lg={8}>
-          <div className="fw-bold mb-2">Gender</div>
-          <Select
-            value={gender}
-            onChange={handleGenderChange}
-            style={{ width: '100%' }}
-            placeholder="Select Gender"
-          >
-            <Option value="">All</Option>
-            <Option value="true">Male</Option>
-            <Option value="false">Female</Option>
-          </Select>
-        </Col>
-        <Col xs={24} md={12} lg={8}>
-          <div className="fw-bold mb-2">Position</div>
-          <Select
-            value={position}
-            onChange={handlePositionChange}
-            style={{ width: '100%' }}
-            placeholder="Select Position"
-          >
-            <Option value="">All</Option>
-            <Option value="Admin">Admin</Option>
-            <Option value="User">User</Option>
-          </Select>
-        </Col>
-      </Row>
-    </div>
+        <Input
+          value={searchTerm}
+          onChange={handleChange}
+          placeholder="Search"
+          allowClear
+          style={{ width: "100%" }}
+        />
+      </div>
+      <div className="container mt-3">
+        <Row gutter={[16, 16]}>
+          <Col xs={24} md={12} lg={8}>
+            <div className="fw-bold mb-2">Gender</div>
+            <Select
+              value={gender}
+              onChange={handleGenderChange}
+              style={{ width: "100%" }}
+              placeholder="Select Gender"
+            >
+              <Option value="">All</Option>
+              <Option value="true">Male</Option>
+              <Option value="false">Female</Option>
+            </Select>
+          </Col>
+          <Col xs={24} md={12} lg={8}>
+            <div className="fw-bold mb-2">Position</div>
+            <Select
+              value={position}
+              onChange={handlePositionChange}
+              style={{ width: "100%" }}
+              placeholder="Select Position"
+            >
+              <Option value="">All</Option>
+              <Option value="Admin">Admin</Option>
+              <Option value="User">User</Option>
+            </Select>
+          </Col>
+        </Row>
+      </div>
       <Table
         className="table table-striped mt-3"
         columns={columns}
         dataSource={employees}
         rowKey="id"
+        pagination={false}
+        bordered
+      />
+      <Pagination
+        className="pagination-container"
+        current={currentPage}
+        pageSize={pageSize}
+        total={total}
+        onChange={handlePageChange}
+        onShowSizeChange={handlePageSizeChange}
       />
     </div>
   );

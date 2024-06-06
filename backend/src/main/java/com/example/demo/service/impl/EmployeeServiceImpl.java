@@ -5,6 +5,8 @@ import com.example.demo.entity.specification.EmployeeSpecifications;
 import com.example.demo.repository.EmployeeRepository;
 import com.example.demo.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -20,32 +22,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     EmployeeRepository repo;
 
     @Override
-    public List<Employee> findAll() {
-        return repo.findAll();
+    public Page<Employee> findAll(Pageable pageable) {
+        return repo.findAll(pageable);
     }
 
     @Override
     public Optional<Employee> findById(Long id) {
         return repo.findById(id);
-    }
-
-    @Override
-    public List<Employee> searchEmployeeByName(String name) {
-        String normalizedSearchTerm = removeVietnameseTones(name);
-        List<Employee> result = repo.findByNameContainingIgnoreCase(name);
-        if (result.isEmpty()) {
-            result = repo.findByNameContainingIgnoreCase(normalizedSearchTerm);
-        }
-        return result;
-    }
-
-    private String removeVietnameseTones(String str) {
-        str = Normalizer.normalize(str, Normalizer.Form.NFD);
-        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-        str = pattern.matcher(str).replaceAll("");
-        str = str.replaceAll("Đ", "D");
-        str = str.replaceAll("đ", "d");
-        return str;
     }
 
     @Override
