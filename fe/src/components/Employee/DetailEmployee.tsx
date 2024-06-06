@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Input, Button, Form, Radio, Select } from "antd";
 
 interface Position {
   id: number;
@@ -13,12 +14,11 @@ const DetailEmployee: React.FC = () => {
   const [age, setAge] = useState<number>();
   const [gender, setGender] = useState<boolean>();
   const [address, setAddress] = useState<string>("");
-  const [position, setPosition] = useState<Position | null>();
+  const [position, setPosition] = useState<Position | null>(null);
 
   const [positions, setPositions] = useState<Position[]>([]);
 
   const { id } = useParams();
-
   const navigator = useNavigate();
 
   useEffect(() => {
@@ -39,9 +39,7 @@ const DetailEmployee: React.FC = () => {
 
   const fetchEmployee = async (id: number) => {
     try {
-      const res = await axios.get(
-        `http://localhost:8080/api/v1/employees/${id}`
-      );
+      const res = await axios.get(`http://localhost:8080/api/v1/employees/${id}`);
       const employeeData = res.data;
       setCode(employeeData.code);
       setName(employeeData.name);
@@ -54,96 +52,48 @@ const DetailEmployee: React.FC = () => {
     }
   };
 
-  function backToList(){
-    navigator("/employees")
-  }
+  const backToList = () => {
+    navigator("/employees");
+  };
 
   return (
-    <div className="container">
+    <div className="container mt-5">
       <h2 className="h2 text-center m-3">Employee</h2>
-      <div>
-        <label className="form-label fw-bold">Code</label>
-        <input
-          className="form-control"
-          type="text"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          disabled
-        />
-      </div>
-      <div>
-        <label className="form-label fw-bold">Name</label>
-        <input
-          className="form-control"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          disabled
-        />
-      </div>
-      <div>
-        <label className="form-label fw-bold">Age</label>
-        <input
-          className="form-control"
-          type="text"
-          value={age}
-          onChange={(e) => setAge(Number(e.target.value))}
-          disabled
-        />
-      </div>
-      <div>
-        <label className="form-label fw-bold">Gender</label>
-        <input
-          type="radio"
-          value="Nam"
-          checked={gender}
-          onChange={() => setGender(true)}
-          disabled
-        />
-        Nam
-        <input
-          type="radio"
-          value="Nữ"
-          checked={!gender}
-          onChange={() => setGender(false)}
-          disabled
-        />
-        Nữ
-      </div>
-      <div>
-        <label className="form-label fw-bold">Address</label>
-        <input
-          className="form-control"
-          type="text"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          disabled
-        />
-      </div>
-      <div>
-        <label className="form-label fw-bold">Position</label>
-        <select
-          className="form-control"
-          value={position?.name || ""}
-          onChange={(e) => {
-            const selectedPosition = positions.find(
-              (p) => p.name === e.target.value
-            );
-            setPosition(selectedPosition || null);
-          }}
-          disabled
-        >
-          <option value="">-- Select Position --</option>
-          {positions.map((p) => (
-            <option key={p.id} value={p.name}>
-              {p.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <button className="btn btn-danger mt-3" onClick={backToList}>Back to list</button>
-      </div>
+      <Form layout="vertical">
+        <Form.Item label="Code">
+          <Input value={code} disabled />
+        </Form.Item>
+        <Form.Item label="Name">
+          <Input value={name} disabled />
+        </Form.Item>
+        <Form.Item label="Age">
+          <Input type="number" value={age} disabled />
+        </Form.Item>
+        <Form.Item label="Gender">
+          <Radio.Group value={gender} disabled>
+            <Radio value={true}>Male</Radio>
+            <Radio value={false}>Female</Radio>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item label="Address">
+          <Input value={address} disabled />
+        </Form.Item>
+        <Form.Item label="Position">
+          <Select value={position?.name || ""} disabled>
+            <Select.Option value="">-- Select Position --</Select.Option>
+            {positions.map((p) => (
+              <Select.Option key={p.id} value={p.name}>
+                {p.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" onClick={backToList}>
+            Back to list
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 };

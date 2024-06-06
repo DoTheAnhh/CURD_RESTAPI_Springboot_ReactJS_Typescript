@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Table, Button } from "antd";
 
 interface Position {
   id: number;
@@ -9,12 +10,11 @@ interface Position {
 
 const ListPosition: React.FC = () => {
   const [positions, setPositions] = useState<Position[]>([]);
-
   const navigator = useNavigate();
 
   const updatePosition = (id: number) => {
-    navigator(`/edit-positions/${id}`)
-  }
+    navigator(`/edit-positions/${id}`);
+  };
 
   useEffect(() => {
     fetchPosition();
@@ -31,28 +31,40 @@ const ListPosition: React.FC = () => {
     }
   };
 
+  const columns = [
+    {
+      title: 'Id',
+      dataIndex: 'id',
+      key: 'id',
+      align: 'center' as const,
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      align: 'center' as const,
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      align: 'center' as const,
+      render: (record: Position) => (
+        <Button type="primary" onClick={() => updatePosition(record.id)}>
+          Update
+        </Button>
+      ),
+    },
+  ];
+
   return (
-    <div className="container">
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {positions.map((p) => (
-            <tr key={p.id}>
-              <td>{p.id}</td>
-              <td>{p.name}</td>
-              <td>
-                <button className="btn btn-warning" onClick={() => updatePosition(p.id)}>Update</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="container mt-3">
+      <Table
+        columns={columns}
+        dataSource={positions}
+        rowKey="id"
+        pagination={false}
+        bordered
+      />
     </div>
   );
 };

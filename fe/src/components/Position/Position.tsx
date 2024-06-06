@@ -1,19 +1,20 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Input, Button, Form, message } from "antd";
 
 const Position: React.FC = () => {
   const [name, setName] = useState<string>("");
-
   const { id } = useParams();
-
-  const position = { name };
-
   const navigator = useNavigate();
 
-  function backToList() {
-    navigator("/positions");
-  }
+  const validateForm = (): boolean => {
+    if (!name.trim()) {
+      message.error("Name is required.");
+      return false;
+    }
+    return true;
+  };
 
   useEffect(() => {
     if (id) {
@@ -34,7 +35,11 @@ const Position: React.FC = () => {
   };
 
   const handleAddOrUpdatePosition = async () => {
+    if (!validateForm()) {
+      return;
+    }
     try {
+      const position = { name };
       if (id) {
         await axios.put(
           `http://localhost:8080/api/v1/positions/${id}`,
@@ -50,27 +55,24 @@ const Position: React.FC = () => {
   };
 
   return (
-    <div className="container">
-      <div>
-        <label className="form-label fw-bold">Name</label>
-        <input
-          className="form-control"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </div>
-      <div>
-        <button
-          className="btn btn-primary mt-5"
-          onClick={handleAddOrUpdatePosition}
-        >
-          Submit
-        </button>
-        <button className="btn btn-danger mt-5 ms-4" onClick={backToList}>
-          Back to list
-        </button>
-      </div>
+    <div className="container mt-5">
+      <Form layout="vertical">
+        <Form.Item label="Name" required>
+          <Input value={name} onChange={(e) => setName(e.target.value)} />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" onClick={handleAddOrUpdatePosition}>
+            Submit
+          </Button>
+          <Button
+            type="default"
+            className="ms-2"
+            onClick={() => navigator("/positions")}
+          >
+            Back to list
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
   );
 };

@@ -1,10 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Input, Button, Form, Radio, Select, message } from "antd";
 
 interface Position {
-    id: number;
-    name: string;
+  id: number;
+  name: string;
 }
 
 const Employee: React.FC = () => {
@@ -13,113 +14,148 @@ const Employee: React.FC = () => {
   const [age, setAge] = useState<number>();
   const [gender, setGender] = useState<boolean>();
   const [address, setAddress] = useState<string>("");
-  const [position, setPosition] = useState<Position | null>();
+  const [position, setPosition] = useState<Position | null>(null);
 
   const [positions, setPositions] = useState<Position[]>([]);
 
   const navigator = useNavigate();
-
   const { id } = useParams();
 
   const employee = { code, name, age, gender, address, position };
 
   useEffect(() => {
-    fetchPosition()  
-    if(id){
-        fetchEmployee(Number(id));
+    fetchPosition();
+    if (id) {
+      fetchEmployee(Number(id));
     }
   }, [id]);
 
   const fetchPosition = async () => {
     try {
-        const res = await axios.get('http://localhost:8080/api/v1/positions')
-        setPositions(res.data)
-    }catch (error) {
-        console.error("Error fetching data:", error);
+      const res = await axios.get("http://localhost:8080/api/v1/positions");
+      setPositions(res.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
-  }
+  };
 
   const fetchEmployee = async (id: number) => {
     try {
-        const res = await axios.get(`http://localhost:8080/api/v1/employees/${id}`)
-        const employeeData = res.data
-        setCode(employeeData.code)
-        setName(employeeData.name)
-        setAge(employeeData.age)
-        setGender(employeeData.gender)
-        setAddress(employeeData.address)
-        if (employeeData.position) {
-            setPosition({
-              id: employeeData.position.id,
-              name: employeeData.position.name
-            });
-          } else {
-            setPosition(null);
-          }
+      const res = await axios.get(`http://localhost:8080/api/v1/employees/${id}`);
+      const employeeData = res.data;
+      setCode(employeeData.code);
+      setName(employeeData.name);
+      setAge(employeeData.age);
+      setGender(employeeData.gender);
+      setAddress(employeeData.address);
+      if (employeeData.position) {
+        setPosition({
+          id: employeeData.position.id,
+          name: employeeData.position.name,
+        });
+      } else {
+        setPosition(null);
+      }
     } catch (error) {
-        console.error("Error fetching employee:", error);
+      console.error("Error fetching employee:", error);
     }
-  }
+  };
+
+  const validateForm = (): boolean => {
+    if (!code.trim()) {
+      message.error("Code is required.");
+      return false;
+    }
+    if (!name.trim()) {
+      message.error("Name is required.");
+      return false;
+    }
+    if (age === undefined || isNaN(age)) {
+      message.error("Age is required.");
+      return false;
+    }
+    if (gender === undefined) {
+      message.error("Gender is required.");
+      return false;
+    }
+    if (!address.trim()) {
+      message.error("Address is required.");
+      return false;
+    }
+    if (!position) {
+      message.error("Position is required.");
+      return false;
+    }
+    return true;
+  };
 
   const handleAddOrUpdateEmployee = async () => {
+    if (!validateForm()) {
+      return;
+    }
     try {
-        if(id){
-            await axios.put(`http://localhost:8080/api/v1/employees/${id}`, employee);
-        }else{
-            await axios.post("http://localhost:8080/api/v1/employees", employee);
-
-        }
-        navigator("/employees")
+      if (id) {
+        await axios.put(`http://localhost:8080/api/v1/employees/${id}`, employee);
+      } else {
+        await axios.post("http://localhost:8080/api/v1/employees", employee);
+      }
+      navigator("/employees");
     } catch (error) {
       console.error("Error adding item:", error);
     }
   };
 
-  function backToList(){
-    navigator("/employees")
-  }
+  const backToList = () => {
+    navigator("/employees");
+  };
 
   return (
-    <div className="container">
-        <div>
-            <label className="form-label fw-bold">Code</label>
-            <input className="form-control" type="text" value={code} onChange={(e) => setCode(e.target.value)}/>
-        </div>
-        <div>
-            <label className="form-label fw-bold">Name</label>
-            <input  className="form-control" type="text" value={name} onChange={(e) => setName(e.target.value)}/>
-        </div>
-        <div>
-            <label className="form-label fw-bold">Age</label>
-            <input  className="form-control" type="text" value={age} onChange={(e) => setAge(Number(e.target.value))}/>
-        </div>  
-        <div>
-            <label className="form-label fw-bold">Gender</label>
-            <input type="radio" value="Nam" checked={gender} onChange={() => setGender(true)}/>Nam
-            <input type="radio" value="Nữ" checked={!gender} onChange={() => setGender(false)}/>Nữ
-        </div>
-        <div>
-            <label className="form-label fw-bold">Address</label>
-            <input  className="form-control" type="text" value={address} onChange={(e) => setAddress(e.target.value)}/>
-        </div>
-        <div>
-            <label className="form-label fw-bold">Position</label>
-            <select className="form-control" value={position?.name || ''} onChange={(e) => {
-                const selectedPosition = positions.find(p => p.name === e.target.value)
-                setPosition(selectedPosition || null)
-            }}>
-                <option value="">-- Select Position --</option>
-                {positions.map((p) => (
-                  <option key={p.id} value={p.name}>{p.name}</option>
-                ))}
-            </select>
-        </div>
-        <div>
-            <button className="btn btn-primary mt-5" onClick={handleAddOrUpdateEmployee}>Submit</button>
-            <button className="btn btn-danger mt-5 ms-4" onClick={backToList}>Back to list</button>
-        </div>
+    <div className="container mt-5">
+      <Form layout="vertical">
+        <Form.Item label="Code" required>
+          <Input value={code} onChange={(e) => setCode(e.target.value)} />
+        </Form.Item>
+        <Form.Item label="Name" required>
+          <Input value={name} onChange={(e) => setName(e.target.value)} />
+        </Form.Item>
+        <Form.Item label="Age" required>
+          <Input type="number" value={age} onChange={(e) => setAge(Number(e.target.value))} />
+        </Form.Item>
+        <Form.Item label="Gender" required>
+          <Radio.Group value={gender} onChange={(e) => setGender(e.target.value)}>
+            <Radio value={true}>Male</Radio>
+            <Radio value={false}>Female</Radio>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item label="Address" required>
+          <Input value={address} onChange={(e) => setAddress(e.target.value)} />
+        </Form.Item>
+        <Form.Item label="Position" required>
+          <Select
+            value={position?.name || "User"}
+            onChange={(value) => {
+              const selectedPosition = positions.find((p) => p.name === value);
+              setPosition(selectedPosition || null);
+            }}
+          >
+            {positions.map((p) => (
+              <Select.Option key={p.id} value={p.name}>
+                {p.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" onClick={handleAddOrUpdateEmployee}>
+            Submit
+          </Button>
+          <Button type="default" className="ms-2" onClick={backToList}>
+            Back to list
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
-  )
+  );
 };
 
 export default Employee;
