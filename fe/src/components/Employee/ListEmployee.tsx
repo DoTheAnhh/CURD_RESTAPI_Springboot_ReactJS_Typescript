@@ -25,34 +25,8 @@ const ListEmployee: React.FC = () => {
   const [position, setPosition] = useState<string>("");
 
   const [currentPage, setCurrentPage] = useState<number>(1); // State để theo dõi trang hiện tại
-  const [pageSize, setPageSize] = useState<number>(5 ); // Số mục trên mỗi trang
+  const [pageSize, setPageSize] = useState<number>(5); // Số mục trên mỗi trang
   const [total, setTotal] = useState<number>(0); // Tổng số phần tử
-
-  const handleSearch = async (
-    searchName: string,
-    selectedGender: string,
-    selectedPosition: string
-  ) => {
-    try {
-      let url = `http://localhost:8080/api/v1/employees/search?`;
-
-      if (searchName) {
-        url += `&name=${encodeURIComponent(searchName)}`;
-      }
-
-      if (selectedGender) {
-        url += `&gender=${selectedGender}`;
-      }
-      if (selectedPosition) {
-        url += `&position=${encodeURIComponent(selectedPosition)}`;
-      }
-
-      const res = await axios.get<Employee[]>(url);
-      setEmployees(res.data);
-    } catch (error) {
-      console.error("Error searching:", error);
-    }
-  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -89,16 +63,42 @@ const ListEmployee: React.FC = () => {
     try {
       const res = await axios.get(
         `http://localhost:8080/api/v1/employees`, {
-          params: {
-            page: currentPage - 1,
-            size: pageSize,
-          },
-        }
+        params: {
+          page: currentPage - 1,
+          size: pageSize,
+        },
+      }
       );
       setEmployees(res.data.content);
       setTotal(res.data.totalElements);
     } catch (error) {
       console.error("Error fetching data:", error);
+    }
+  };
+
+  const handleSearch = async (
+    searchName: string,
+    selectedGender: string,
+    selectedPosition: string
+  ) => {
+    try {
+      let url = `http://localhost:8080/api/v1/employees/search?`;
+
+      if (searchName) {
+        url += `&name=${encodeURIComponent(searchName)}`;
+      }
+
+      if (selectedGender) {
+        url += `&gender=${selectedGender}`;
+      }
+      if (selectedPosition) {
+        url += `&position=${encodeURIComponent(selectedPosition)}`;
+      }
+
+      const res = await axios.get<Employee[]>(url);
+      setEmployees(res.data);
+    } catch (error) {
+      console.error("Error searching:", error);
     }
   };
 
@@ -109,6 +109,25 @@ const ListEmployee: React.FC = () => {
   const editEmployee = (id: number) => {
     navigator(`/edit-employee/${id}`);
   };
+
+  const handleExcelExport = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/employees/export`, {
+        responseType: 'blob' // Đặt kiểu dữ liệu phản hồi là blob
+      });
+
+      // Tạo một URL tạm thời từ dữ liệu blob để tải xuống tệp Excel
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Tạo một thẻ a để tạo và kích hoạt sự kiện click để tải xuống tệp Excel
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'employees.xlsx');
+      link.click();
+    } catch (error) {
+      console.error('Error exporting Excel:', error);
+    }
+  }
 
   const deleteEmployee = async (id: number) => {
     try {
@@ -198,7 +217,7 @@ const ListEmployee: React.FC = () => {
         />
       </div>
       <div className="container mt-3">
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 16]} align="middle">
           <Col xs={24} md={12} lg={8}>
             <div className="fw-bold mb-2">Gender</div>
             <Select
@@ -212,7 +231,7 @@ const ListEmployee: React.FC = () => {
               <Option value="false">Female</Option>
             </Select>
           </Col>
-          <Col xs={24} md={12} lg={8}>
+          <Col xs={24} md={12} lg={8} className="excelPortButton">
             <div className="fw-bold mb-2">Position</div>
             <Select
               value={position}
@@ -224,6 +243,17 @@ const ListEmployee: React.FC = () => {
               <Option value="Admin">Admin</Option>
               <Option value="User">User</Option>
             </Select>
+          </Col>
+          <Col xs={24} md={12} lg={8}>
+            <div className="text-center" style={{ marginTop: "30px" }}>
+              <Button
+                type="primary"
+                className="me-2"
+                onClick={handleExcelExport}
+              >
+                Excel export
+              </Button>
+            </div>
           </Col>
         </Row>
       </div>

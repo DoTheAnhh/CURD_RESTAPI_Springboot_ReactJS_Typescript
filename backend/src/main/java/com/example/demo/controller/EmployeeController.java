@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Optional;
@@ -72,5 +75,18 @@ public class EmployeeController {
         str = str.replaceAll("Đ", "D");
         str = str.replaceAll("đ", "d");
         return str;
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportToExcel() throws IOException {
+        byte[] excelData = service.exportEmployeeToExcel();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=employee.xlsx");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(excelData);
     }
 }

@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Table, Button, Pagination } from "antd";
+import { Table, Button, Pagination, Col } from "antd";
 import "./css/Position.css";
 
 interface Position {
@@ -12,7 +12,7 @@ interface Position {
 const ListPosition: React.FC = () => {
   const [positions, setPositions] = useState<Position[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1); // State để theo dõi trang hiện tại
-  const [pageSize, setPageSize] = useState<number>(2); // Số mục trên mỗi trang
+  const [pageSize, setPageSize] = useState<number>(3); // Số mục trên mỗi trang
   const [total, setTotal] = useState<number>(0); // Tổng số phần tử
   const navigator = useNavigate();
 
@@ -22,7 +22,7 @@ const ListPosition: React.FC = () => {
 
   useEffect(() => {
     fetchPosition();
-  }, [currentPage, pageSize]); // Gọi hàm fetchPosition khi currentPage hoặc pageSize thay đổi
+  }, [currentPage, pageSize]);
 
   const fetchPosition = async () => {
     try {
@@ -38,6 +38,25 @@ const ListPosition: React.FC = () => {
       console.error("Error fetching data:", error);
     }
   };
+
+  const handleExcelExport = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/positions/export`, {
+        responseType: 'blob' // Đặt kiểu dữ liệu phản hồi là blob
+      });
+
+      // Tạo một URL tạm thời từ dữ liệu blob để tải xuống tệp Excel
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Tạo một thẻ a để tạo và kích hoạt sự kiện click để tải xuống tệp Excel
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'positons.xlsx');
+      link.click();
+    } catch (error) {
+      console.error('Error exporting Excel:', error);
+    }
+  }
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -75,6 +94,17 @@ const ListPosition: React.FC = () => {
 
   return (
     <div className="container mt-3">
+      <Col xs={24} md={12} lg={8}>
+            <div className="text-center" style={{ marginRight: "-1410px", marginBottom: "20px" }}>
+              <Button
+                type="primary"
+                className="me-2"
+                onClick={handleExcelExport}
+              >
+                Excel export
+              </Button>
+            </div>
+          </Col>
       <Table
         columns={columns}
         dataSource={positions}
