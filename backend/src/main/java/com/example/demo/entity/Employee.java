@@ -32,6 +32,12 @@ public class Employee {
     @Column(name = "address")
     private String address;
 
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "password")
+    private String password;
+
     @ManyToOne
     @JoinColumn(name = "id_positon")
     private Position position;

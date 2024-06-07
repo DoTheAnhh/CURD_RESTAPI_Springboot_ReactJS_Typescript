@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.text.Normalizer;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -50,7 +49,7 @@ public class EmployeeController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
+    //Them 2 thuoc tinh va sap xep theo code employee
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Input, Button, Form, Radio, Select } from "antd";
 
@@ -15,25 +15,28 @@ const DetailEmployee: React.FC = () => {
   const [gender, setGender] = useState<boolean>();
   const [address, setAddress] = useState<string>("");
   const [position, setPosition] = useState<Position | null>(null);
+  const [email, setEmail] = useState<string>("");
 
   const [positions, setPositions] = useState<Position[]>([]);
 
   const { id } = useParams();
-  const navigator = useNavigate();
+  const navigate = useNavigate();
+
+  const formRef = useRef(null);
 
   useEffect(() => {
-    fetchPosition();
+    fetchPositions();
     if (id) {
       fetchEmployee(Number(id));
     }
   }, [id]);
 
-  const fetchPosition = async () => {
+  const fetchPositions = async () => {
     try {
       const res = await axios.get("http://localhost:8080/api/v1/positions");
       setPositions(res.data);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching positions:", error);
     }
   };
 
@@ -47,19 +50,20 @@ const DetailEmployee: React.FC = () => {
       setGender(employeeData.gender);
       setAddress(employeeData.address);
       setPosition(employeeData.position);
+      setEmail(employeeData.email);
     } catch (error) {
       console.error("Error fetching employee:", error);
     }
   };
 
   const backToList = () => {
-    navigator("/employees");
+    navigate("/employees");
   };
 
   return (
     <div className="container mt-5">
       <h2 className="h2 text-center m-3">Employee</h2>
-      <Form layout="vertical">
+      <Form layout="vertical" ref={formRef}>
         <Form.Item label="Code">
           <Input value={code} disabled />
         </Form.Item>
@@ -81,12 +85,18 @@ const DetailEmployee: React.FC = () => {
         <Form.Item label="Position">
           <Select value={position?.name || ""} disabled>
             <Select.Option value="">-- Select Position --</Select.Option>
-            {positions.map((p) => (
+            {Array.isArray(positions) && positions.map((p) => (
               <Select.Option key={p.id} value={p.name}>
                 {p.name}
               </Select.Option>
             ))}
           </Select>
+        </Form.Item>
+        <Form.Item label="Email">
+          <Input value={email} disabled />
+        </Form.Item>
+        <Form.Item label="Password">
+          <Input value={"••••••••"} disabled />
         </Form.Item>
         <Form.Item>
           <Button type="primary" onClick={backToList}>

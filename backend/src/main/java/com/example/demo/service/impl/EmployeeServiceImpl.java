@@ -16,10 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.Normalizer;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -54,6 +52,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             existingEmployee.setGender(updatedEmployee.isGender());
             existingEmployee.setAddress(updatedEmployee.getAddress());
             existingEmployee.setPosition(updatedEmployee.getPosition());
+            existingEmployee.setEmail(updatedEmployee.getEmail());
+            existingEmployee.setPassword(updatedEmployee.getPassword());
 
             return repo.save(existingEmployee);
         } else {
@@ -102,7 +102,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         // Tạo header row
         Row headerRow = sheet.createRow(0);
-        String[] headers = {"ID", "Code", "Name", "Age", "Gender", "Address", "Position"};
+        String[] headers = {"ID", "Code", "Name", "Age", "Gender", "Address", "Position", "Email", "Password"};
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
@@ -120,6 +120,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             createStyledCell(row, 4, e.isGender() ? "Male" : "Female", dataStyle);
             createStyledCell(row, 5, e.getAddress(), dataStyle);
             createStyledCell(row, 6, e.getPosition().getName(), dataStyle);
+            createStyledCell(row, 7, e.getEmail(), dataStyle);
+            createStyledCell(row, 8, e.getPassword(), dataStyle);
         }
 
         // Tự động điều chỉnh độ rộng cột - Auto size columns
@@ -132,6 +134,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         sheet.setColumnWidth(0, 2500); // ID column width
         sheet.setColumnWidth(1, 4000); // Code column width
         sheet.setColumnWidth(2, 8000); // Name column width
+        sheet.setColumnWidth(7, 8000); // Email column width
+        sheet.setColumnWidth(8, 2500); // Password column width
 
         // Ghi dữ liệu vào ByteArrayOutputStream
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

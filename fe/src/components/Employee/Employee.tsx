@@ -15,13 +15,15 @@ const Employee: React.FC = () => {
   const [gender, setGender] = useState<boolean>();
   const [address, setAddress] = useState<string>("");
   const [position, setPosition] = useState<Position | null>(null);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   const [positions, setPositions] = useState<Position[]>([]);
 
   const navigator = useNavigate();
   const { id } = useParams();
 
-  const employee = { code, name, age, gender, address, position };
+  const employee = { code, name, age, gender, address, position, email, password };
 
   useEffect(() => {
     fetchPosition();
@@ -56,6 +58,8 @@ const Employee: React.FC = () => {
       } else {
         setPosition(null);
       }
+      setEmail(employeeData.email);
+      setPassword(employeeData.password);
     } catch (error) {
       console.error("Error fetching employee:", error);
     }
@@ -84,6 +88,14 @@ const Employee: React.FC = () => {
     }
     if (!position) {
       message.error("Position is required.");
+      return false;
+    }
+    if (!email.trim()) {
+      message.error("Email is required.");
+      return false;
+    }
+    if (!password.trim()) {
+      message.error("Password is required.");
       return false;
     }
     return true;
@@ -145,6 +157,12 @@ const Employee: React.FC = () => {
               </Select.Option>
             ))}
           </Select>
+        </Form.Item>
+        <Form.Item label="Email" required>
+          <Input value={email} onChange={(e) => setEmail(e.target.value)} />
+        </Form.Item>
+        <Form.Item label="Password" required>
+          <Input value={password} onChange={(e) => setPassword(e.target.value)} />
         </Form.Item>
         <Form.Item>
           <Button type="primary" onClick={handleAddOrUpdateEmployee}>

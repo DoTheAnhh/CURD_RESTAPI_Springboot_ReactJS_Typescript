@@ -16,10 +16,13 @@ interface Employee {
   position: {
     name: string;
   };
+  email: string;
+  password: string;
 }
 
 const ListEmployee: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [gender, setGender] = useState<string>("");
   const [position, setPosition] = useState<string>("");
@@ -33,7 +36,7 @@ const ListEmployee: React.FC = () => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setSearchTerm(value);
-    
+
     if (value === "") {
       setCurrentPage(0); // Đặt trang hiện tại về 0 nếu ô tìm kiếm trống
     }
@@ -61,8 +64,7 @@ const ListEmployee: React.FC = () => {
     fetchEmployee(0, size); // Gọi hàm fetchEmployee với trang đầu tiên và kích thước trang mới
   };
 
-  // Cập nhật hàm fetchEmployee để lấy dữ liệu dựa trên trang và kích thước trang được truyền vào
-  const fetchEmployee = async (page: number, size: number) => {
+  const fetchEmployee = async (page: number, size: number): Promise<Employee[]> => {
     try {
       const res = await axios.get(`http://localhost:8080/api/v1/employees`, {
         params: {
@@ -70,10 +72,11 @@ const ListEmployee: React.FC = () => {
           size: size,
         },
       });
-      setEmployees(res.data.content);
       setTotal(res.data.totalElements); // Cập nhật tổng số phần tử
+      return res.data.content; // Trả về mảng Employee[]
     } catch (error) {
       console.error("Error fetching data:", error);
+      return []; // Trả về một mảng trống trong trường hợp lỗi
     }
   };
 
@@ -87,18 +90,18 @@ const ListEmployee: React.FC = () => {
   ) => {
     try {
       let url = `http://localhost:8080/api/v1/employees/search?page=${page}&size=${size}`;
-  
+
       if (searchName) {
         url += `&name=${encodeURIComponent(searchName)}`;
       }
-  
+
       if (selectedGender) {
         url += `&gender=${selectedGender}`;
       }
       if (selectedPosition) {
         url += `&position=${encodeURIComponent(selectedPosition)}`;
       }
-  
+
       const res = await axios.get(url);
       setEmployees(res.data.content); // Đảm bảo cập nhật dữ liệu cùng định dạng
       setTotal(res.data.totalElements); // Cập nhật tổng số phần tử
@@ -136,13 +139,28 @@ const ListEmployee: React.FC = () => {
 
   const deleteEmployee = async (id: number) => {
     try {
-        await axios.delete(`http://localhost:8080/api/v1/employees/${id}`);
-        alert("Deleted employee ID: " + id);
-        fetchEmployee(currentPage, pageSize);
+      await axios.delete(`http://localhost:8080/api/v1/employees/${id}`);
+      alert("Deleted employee ID: " + id);
+      fetchEmployee(currentPage, pageSize);
     } catch (error) {
-        console.error(`Error deleting employee with ID ${id}:`, error);
+      console.error(`Error deleting employee with ID ${id}:`, error);
     }
-};
+  };
+
+  const sortEmployeeCodes = (employees: Employee[]) => {
+    return employees.sort((a, b) => {
+      const codeA = parseInt(a.code.substring(2)); // Lấy phần số của mã nhân viên A
+      const codeB = parseInt(b.code.substring(2)); // Lấy phần số của mã nhân viên B
+      return codeA - codeB; // Sắp xếp theo số
+    });
+  };
+
+  useEffect(() => {
+    fetchEmployee(currentPage, pageSize).then((data) => {
+      const sortedEmployees = sortEmployeeCodes(data);
+      setEmployees(sortedEmployees);
+    });
+  }, [currentPage, pageSize]);
 
   const columns = [
     {
@@ -183,6 +201,19 @@ const ListEmployee: React.FC = () => {
       align: "center" as const,
     },
     {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+      align: "center" as const,
+    },
+    {
+      title: "Password",
+      dataIndex: "password",
+      key: "password",
+      render: () => '••••••••',
+      align: "center" as const,
+    },
+    {
       title: "Action",
       key: "action",
       align: "center" as const,
@@ -209,10 +240,6 @@ const ListEmployee: React.FC = () => {
       ),
     },
   ];
-
-  useEffect(() => {
-    fetchEmployee(currentPage, pageSize);
-  }, [currentPage, pageSize]);
 
   return (
     <div className="container">
