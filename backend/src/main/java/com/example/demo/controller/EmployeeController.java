@@ -58,14 +58,17 @@ public class EmployeeController {
     }
 
     @GetMapping("/search")
-    public List<Employee> searchEmployees(
+    public ResponseEntity<Page<Employee>> searchEmployees(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Boolean gender,
-            @RequestParam(required = false) String position) {
+            @RequestParam(required = false) String position,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size) {
         if (name != null) {
             name = removeVietnameseTones(name);
         }
-        return service.searchEmployees(name, gender, position);
+        Page<Employee> employeesPage = service.searchEmployees(name, gender, position, page, size);
+        return ResponseEntity.ok().body(employeesPage);
     }
 
     private String removeVietnameseTones(String str) {

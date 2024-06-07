@@ -21,7 +21,7 @@ public interface EmployeeService {
 
     void delete(Long id);
 
-    List<Employee> searchEmployees(String name, Boolean gender, String position);
+    Page<Employee> searchEmployees(String name, Boolean gender, String position, int page, int size);
 
     byte[] exportEmployeeToExcel() throws IOException;
 }

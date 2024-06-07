@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -66,7 +67,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<Employee> searchEmployees(String name, Boolean gender, String position) {
+    public Page<Employee> searchEmployees(String name, Boolean gender, String position, int page, int size) {
         Specification<Employee> spec = Specification.where(null);
 
         if (name != null && !name.trim().isEmpty()) {
@@ -81,9 +82,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             spec = spec.and(EmployeeSpecifications.hasPosition(position));
         }
 
-        return repo.findAll(spec);
+        Pageable pageable = PageRequest.of(page, size);
+        return repo.findAll(spec, pageable);
     }
 
+    @Override
     public byte[] exportEmployeeToExcel() throws IOException {
         List<Employee> employees = repo.findAll();
 
