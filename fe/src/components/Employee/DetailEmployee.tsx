@@ -1,7 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Input, Button, Form, Radio, Select } from "antd";
+import { Button, Form, Typography } from "antd";
+const { Text } = Typography;
 
 interface Position {
   id: number;
@@ -17,28 +18,16 @@ const DetailEmployee: React.FC = () => {
   const [position, setPosition] = useState<Position | null>(null);
   const [email, setEmail] = useState<string>("");
 
-  const [positions, setPositions] = useState<Position[]>([]);
-
   const { id } = useParams();
   const navigate = useNavigate();
 
   const formRef = useRef(null);
 
   useEffect(() => {
-    fetchPositions();
     if (id) {
       fetchEmployee(Number(id));
     }
   }, [id]);
-
-  const fetchPositions = async () => {
-    try {
-      const res = await axios.get("http://localhost:8080/api/v1/positions");
-      setPositions(res.data);
-    } catch (error) {
-      console.error("Error fetching positions:", error);
-    }
-  };
 
   const fetchEmployee = async (id: number) => {
     try {
@@ -65,38 +54,28 @@ const DetailEmployee: React.FC = () => {
       <h2 className="h2 text-center m-3">Employee</h2>
       <Form layout="vertical" ref={formRef}>
         <Form.Item label="Code">
-          <Input value={code} disabled />
+          <Text type="success">{code}</Text>
         </Form.Item>
         <Form.Item label="Name">
-          <Input value={name} disabled />
+          <Text type="success">{name}</Text>
         </Form.Item>
         <Form.Item label="Age">
-          <Input type="number" value={age} disabled />
+          <Text type="success">{age}</Text>
         </Form.Item>
         <Form.Item label="Gender">
-          <Radio.Group value={gender} disabled>
-            <Radio value={true}>Male</Radio>
-            <Radio value={false}>Female</Radio>
-          </Radio.Group>
+          <Text type="success">{gender ? "Male" : "Female"}</Text>
         </Form.Item>
         <Form.Item label="Address">
-          <Input value={address} disabled />
+          <Text type="success">{address}</Text>
         </Form.Item>
         <Form.Item label="Position">
-          <Select value={position?.name || ""} disabled>
-            <Select.Option value="">-- Select Position --</Select.Option>
-            {Array.isArray(positions) && positions.map((p) => (
-              <Select.Option key={p.id} value={p.name}>
-                {p.name}
-              </Select.Option>
-            ))}
-          </Select>
+          <Text type="success">{position?.name}</Text>
         </Form.Item>
         <Form.Item label="Email">
-          <Input value={email} disabled />
+          <Text type="success">{email}</Text>
         </Form.Item>
         <Form.Item label="Password">
-          <Input value={"••••••••"} disabled />
+          <Text type="success">{"••••••••"}</Text>
         </Form.Item>
         <Form.Item>
           <Button type="primary" onClick={backToList}>

@@ -21,5 +21,9 @@ public class EmployeeSpecifications {
             return criteriaBuilder.equal(positionJoin.get("name"), position);
         };
     }
+
+    public static Specification<Employee> hasEmail(String email) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("email"), "%" + email + "%");
+    }
 }
 
