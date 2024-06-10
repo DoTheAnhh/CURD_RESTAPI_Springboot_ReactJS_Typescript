@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Table, Button, Pagination, Col } from "antd";
 import "./css/Position.css";
+import { EditOutlined, FileExcelOutlined } from "@ant-design/icons";
 
 interface Position {
   id: number;
@@ -85,7 +86,7 @@ const ListPosition: React.FC = () => {
       key: "action",
       align: "center" as const,
       render: (record: Position) => (
-        <Button type="primary" onClick={() => updatePosition(record.id)}>
+        <Button type="primary" onClick={() => updatePosition(record.id)} icon={<EditOutlined />}>
           Update
         </Button>
       ),
@@ -100,6 +101,7 @@ const ListPosition: React.FC = () => {
                 type="primary"
                 className="me-2"
                 onClick={handleExcelExport}
+                icon={<FileExcelOutlined />}
               >
                 Excel export
               </Button>

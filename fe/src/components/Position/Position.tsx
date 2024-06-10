@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Input, Button, Form, message } from "antd";
+import { FileAddOutlined, RollbackOutlined } from "@ant-design/icons";
 
 const Position: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -61,13 +62,14 @@ const Position: React.FC = () => {
           <Input value={name} onChange={(e) => setName(e.target.value)} />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" onClick={handleAddOrUpdatePosition}>
+          <Button type="primary" onClick={handleAddOrUpdatePosition} icon={<FileAddOutlined />}>
             Submit
           </Button>
           <Button
             type="default"
             className="ms-2"
             onClick={() => navigator("/positions")}
+            icon={<RollbackOutlined />}
           >
             Back to list
           </Button>

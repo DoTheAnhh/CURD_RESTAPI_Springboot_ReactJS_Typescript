@@ -1,8 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Table, Select, Input, Button, Pagination, Row, Col } from "antd";
+import { Table, Select, Input, Button, Pagination, Row, Col, message, Popconfirm } from "antd";
 import "./css/Employee.css"
+import { DeleteFilled, EditFilled, FileExcelOutlined, MoreOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 
@@ -137,11 +138,15 @@ const ListEmployee: React.FC = () => {
     }
   }
 
-  const deleteEmployee = async (id: number) => {
+  const handleDeleteConfirm = async (id: number) => {
     try {
       await axios.delete(`http://localhost:8080/api/v1/employees/${id}`);
-      alert("Deleted employee ID: " + id);
-      fetchEmployee(currentPage, pageSize);
+      message.success(`Deleted employee with ID ${id}`);
+      const newEmployees = employees.filter(employee => employee.id !== id); 
+      setEmployees(newEmployees);
+      if (newEmployees.length === 0 && currentPage > 1) {
+        handlePageChange(currentPage - 1);
+      }
     } catch (error) {
       console.error(`Error deleting employee with ID ${id}:`, error);
     }
@@ -223,6 +228,7 @@ const ListEmployee: React.FC = () => {
             type="primary"
             className="me-2"
             onClick={() => detailEmployee(record.id)}
+            icon={<MoreOutlined />}
           >
             Detail
           </Button>
@@ -230,12 +236,18 @@ const ListEmployee: React.FC = () => {
             type="primary"
             className="me-2"
             onClick={() => editEmployee(record.id)}
+            icon={<EditFilled />}
           >
             Update
           </Button>
-          <Button type="primary" onClick={() => deleteEmployee(record.id)}>
-            Delete
-          </Button>
+          <Popconfirm
+            title="Are you sure to delete this employee?"
+            onConfirm={() => handleDeleteConfirm(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="primary" icon={<DeleteFilled />}>Delete</Button>
+          </Popconfirm>
         </div>
       ),
     },
@@ -286,6 +298,7 @@ const ListEmployee: React.FC = () => {
                 type="primary"
                 className="me-2"
                 onClick={handleExcelExport}
+                icon={<FileExcelOutlined />}
               >
                 Excel export
               </Button>

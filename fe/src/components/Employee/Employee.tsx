@@ -1,7 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Input, Button, Form, Radio, Select, message } from "antd";
+import { Input, Button, Form, Radio, Select, message, Popconfirm } from "antd";
+import { RollbackOutlined, UserAddOutlined } from "@ant-design/icons";
 
 interface Position {
   id: number;
@@ -165,12 +166,22 @@ const Employee: React.FC = () => {
           <Input value={password} onChange={(e) => setPassword(e.target.value)} />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" onClick={handleAddOrUpdateEmployee}>
-            Submit
-          </Button>
-          <Button type="default" className="ms-2" onClick={backToList}>
-            Back to list
-          </Button>
+          <Popconfirm
+            title="Are you sure to submit this Employee ?"
+            onConfirm={() => handleAddOrUpdateEmployee()}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="primary" icon={<UserAddOutlined />}>Submit</Button>
+          </Popconfirm>
+          <Popconfirm
+            title="Are you sure back to list ?"
+            className="ms-2"
+            onConfirm={backToList}
+            okText="Yes"
+            cancelText="No">
+            <Button type="default" icon={<RollbackOutlined />}>Back to list</Button>
+          </Popconfirm>
         </Form.Item>
       </Form>
     </div>
